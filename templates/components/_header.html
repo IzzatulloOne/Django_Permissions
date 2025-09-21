@@ -29,13 +29,20 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'about' %}">About</a>
           </li>
-          {% if request.user.is_staff %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'add_movie' %}">Add_Movie</a>
+            <a class="nav-link" href="{% url 'about' %}">About</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/">Admin</a>
-          </li>
+          {% if user.is_authenticated %}
+            {% if perms.movies.add_movie %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_movie' %}">Add_Movie</a>
+              </li>
+            {% endif %}
+            {% if user.is_superuser %}
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/">Admin</a>
+              </li>
+            {% endif %}
           {% endif %}
         </ul>
       </div>

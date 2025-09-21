@@ -51,7 +51,7 @@ class RegisterForm(forms.ModelForm):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"].lower()
         user.set_password(self.cleaned_data["password1"])
-        user.is_active = False  # оставляем неактивным до подтверждения
+        user.is_active = False 
         if commit:
             user.save()
         return user

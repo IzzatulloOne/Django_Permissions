@@ -55,13 +55,15 @@
               {% else %}
                 <p>Muallif : Noma’lum</p>
               {% endif %}
-              {% if user.is_staff %}
+              {% if perms.movie.delete_movie %}
               <a
                 href="{% url 'delete_movie' movie.id %}"
                 class="btn btn-sm btn-danger"
               >
                 <i class="fas fa-trash"></i>
               </a>
+              {% endif %}
+              {% if pemrs.movie.change_movie %}
               <a
                 href="{% url 'update_movie' movie.id %}"
                 class="btn btn-sm btn-primary"

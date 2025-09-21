@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, get_user_model
+from django.contrib.auth import authenticate, login , logout as auth_login, get_user_model, logout
 from .models import MagicLinkToken
 from .forms import RegisterForm, LoginForm, MagicLinkForm
 
@@ -30,7 +30,6 @@ def register_view(request):
             token = uuid.uuid4().hex
             MagicLinkToken.objects.create(email=user.email, token=token)
             link = request.build_absolute_uri(f"/accounts/verify/{token}/")
-            # Для разработки — печать в консоль. В проде — отправлять email.
             print("Magic link:", link)
             messages.success(request, "Готово — ссылка подтверждения в консоли.")
             return redirect("login:login_view")
@@ -70,6 +69,6 @@ def verify_token(request, token):
 
     user.is_active = True
     user.save()
-    auth_login(request, user)
+    auth_login(request)
     token_obj.delete()
     return redirect("/")

@@ -5,7 +5,7 @@
   <div style="padding:24px;background:rgba(255,255,255,0.02);border-radius:10px;">
     <h3>Ссылка недействительна</h3>
     {% if reason == 'expired' %}<p>Ссылка устарела.</p>{% elif reason == 'no_user' %}<p>Пользователь не найден.</p>{% else %}<p>Неверная ссылка.</p>{% endif %}
-    <p><a href="{% url 'login:register' %}">Зарегистрироваться</a></p>
+    <p><a href="{% url 'user_login:register' %}">Зарегистрироваться</a></p>
   </div>
 </body>
 </html>

@@ -1,17 +1,17 @@
 from django import forms
-from .models import Genre, Movie
-from django import forms
 from .models import Movie
 
 class MovieForm(forms.ModelForm):
     class Meta:
         model = Movie
-        exclude = ['views']
+        exclude = ['views', 'author']
         labels = {
             "title": "Nomi",
             "description": "Tavsifi",
             "genre": "Janri",
-            "image": "Rasm"
+            "cover": "Poster",
+            "video": "Video",
+            "release": "Chiqqan sanasi",
         }
         widgets = {
             "title": forms.TextInput(attrs={
@@ -26,7 +26,14 @@ class MovieForm(forms.ModelForm):
             "genre": forms.Select(attrs={
                 "class": "form-select"
             }),
-            "image": forms.ClearableFileInput(attrs={
+            "cover": forms.ClearableFileInput(attrs={
                 "class": "form-control"
-            })
+            }),
+            "video": forms.ClearableFileInput(attrs={
+                "class": "form-control"
+            }),
+            "release": forms.DateInput(attrs={
+                "type": "date",
+                "class": "form-control"
+            }),
         }
