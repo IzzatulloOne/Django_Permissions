@@ -93,37 +93,63 @@ class MovieCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     def get_success_url(self):
         return reverse_lazy("by_movie", kwargs={"movie_id": self.object.pk})
     
-@login_required
-@permission_required('movies.change_movie', raise_exception=True)
-def update_movie(request, movie_id):
-    movie = get_object_or_404(Movie, pk=movie_id)
-    if request.user != movie.author and not request.user.is_superuser:
-        messages.error(request, "Siz bu filmni tahrirlay olmaysiz!")
-        return redirect("main")
 
-    if request.method == 'POST':
-        form = MovieForm(request.POST, request.FILES, instance=movie)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Film yangilandi!")
-            return redirect("by_movie", movie_id=movie.pk)
-    else:
-        form = MovieForm(instance=movie)
-    return render(request, 'moviesite/update_movie.html', {'form': form})
+from django.views.generic.edit import UpdateView
 
-@login_required
-@permission_required('movies.delete_movie', raise_exception=True)
-def delete_movie(request, movie_id):
-    movie = get_object_or_404(Movie, pk=movie_id)
-    if request.user != movie.author and not request.user.is_superuser:
-        messages.error(request, "Siz bu filmni o'chira olmaysiz!")
-        return redirect("main")
+class MovieUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Movie
+    form_class = MovieForm
+    template_name = "moviesite/add_movie.html"
+    permission_required = "movies.change_movie"
+    raise_exception = True
+    pk_url_kwarg = "movie_id"
 
-    if request.method == 'POST':
+    def get_object(self, queryset=None):
+        return get_object_or_404(Movie, pk=self.kwargs["movie_id"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Filmni tahrirlash"
+        return context
+
+    def form_valid(self, form):
+        movie = form.save(commit=False)
+        movie.author = self.request.user
+        movie.save()
+        messages.success(self.request, "Film yangilandi!")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("by_movie", kwargs={"movie_id": self.object.pk})
+
+
+from django.views.generic.edit import DeleteView
+
+class MovieDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Movie
+    template_name = "moviesite/delete_movie.html"
+    permission_required = "movies.delete_movie"
+    raise_exception = True
+    pk_url_kwarg = "movie_id"
+    success_url = reverse_lazy("main")
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Movie, pk=self.kwargs["movie_id"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Filmni o'chirish"
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        movie = self.get_object()
+        if request.user != movie.author and not request.user.is_superuser:
+            messages.error(request, "Siz bu filmni o'chira olmaysiz!")
+            return redirect("main")
         movie.delete()
         messages.success(request, "Film o'chirildi!")
-        return redirect("main")
-    return render(request, 'moviesite/delete_movie.html', {'movie': movie})
+        return redirect(self.success_url)
+
 
 def author_profile(request, username):
     user = get_object_or_404(User, username=username)
@@ -148,4 +174,4 @@ def author_profil(request, username: str):
 
 def user_logout(reuqest):
     logout(reuqest)
-    return redirect('login_view')
+    return redirect('main')
