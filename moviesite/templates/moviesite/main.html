@@ -14,13 +14,13 @@
     <div class="col-3">
       <div class="list-group list-group-light">
         {% for genre in genres %}
-        <a
-          href="{% url 'by_genre' genre.id %}"
-          class="list-group-item list-group-item-action px-3 border-0"
-        >{{ genre.type }}</a>
+        <a href="{% url 'by_genre' genre.id %}" class="list-group-item list-group-item-action px-3 border-0">
+          {{ genre.type }}
+        </a>
         {% endfor %}
       </div>
     </div>
+
     <div>
       <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for movie in movies %}
@@ -41,17 +41,13 @@
               </p>
             </div>
             <div class="card-footer">
-              <small class="text-muted">
-                Sana: {{ movie.release|date:"Y-m-d" }}</small>
+              <small class="text-muted">Sana: {{ movie.release|date:"Y-m-d" }}</small>
               {% if movie.author %}
-                <p>
-                  Muallif : 
-                  <a href="{% url 'profile' movie.author.username %}">
-                    {{ movie.author.get_full_name|default:movie.author.username }}
-                  </a>
-                </p>
+                <p>Muallif: <a href="{% url 'profile' movie.author.username %}">
+                  {{ movie.author.get_full_name|default:movie.author.username }}
+                </a></p>
               {% else %}
-                <p>Muallif : Noma’lum</p>
+                <p>Muallif: Noma’lum</p>
               {% endif %}
               {% if perms.movies.delete_movie %}
               <a href="{% url 'delete_movie' movie.id %}" class="btn btn-sm btn-danger">
@@ -70,5 +66,82 @@
       </div>
     </div>
   </div>
+
+  <!-- Пагинация постов -->
+  <section class="posts mt-5">
+    <nav class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Previous</a>
+        {% else %}
+          <span class="page-disabled">‹ Previous</span>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+            {% if num == page_obj.number %}
+              <span class="page-current">{{ num }}</span>
+            {% else %}
+              <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next ›</a>
+        {% else %}
+          <span class="page-disabled">Next ›</span>
+        {% endif %}
+    </nav>
+</section>
+
+<style>
+.posts ul {
+    list-style: none;
+    padding: 0;
+}
+.posts li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    align-items: center;
+}
+
+.page-link {
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #007bff;
+    transition: background 0.2s;
+}
+
+.page-link:hover {
+    background-color: #e2e6ea;
+}
+
+.page-current {
+    padding: 6px 12px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.page-disabled {
+    padding: 6px 12px;
+    color: #999;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+</style>
+
+
 </main>
+
 {% endblock main %}

@@ -17,9 +17,16 @@ class MainView(ListView):
     model = Movie
     template_name = "moviesite/main.html"
     context_object_name = "movies"
+    paginate_by = 4
 
     def get_queryset(self):
-        return Movie.objects.filter(published=True)
+        qs = super().get_queryset()
+        search = self.request.GET.get('q')
+        
+        if search:
+            qs = qs.filter(title__icontains=search)
+
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

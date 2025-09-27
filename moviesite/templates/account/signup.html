@@ -1,0 +1,88 @@
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% load socialaccount %}
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% trans "Регистрация" %} — MySite</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* reuse same CSS as login but slightly different header spacing */
+    :root{
+      --bg:#0b0f14; --card:#0f1720; --muted:#97a0ad; --accent1:#00ffd5; --accent2:#9b5cff; --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:
+      radial-gradient(600px 300px at 10% 10%, rgba(155,92,255,0.06), transparent 10%),
+      radial-gradient(700px 300px at 90% 90%, rgba(0,255,213,0.04), transparent 10%),
+      var(--bg);color:#e6edf3;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card{width:100%;max-width:520px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .title{font-weight:700;font-size:20px;margin-bottom:6px}
+    .subtitle{color:var(--muted);font-size:13px;margin-bottom:16px}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    input{width:100%;background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:12px 14px;border-radius:8px;color:inherit;outline:none}
+    input:focus{box-shadow: 0 0 18px rgba(155,92,255,0.08);border-color:rgba(155,92,255,0.35)}
+    .row{display:flex;gap:12px}
+    .field{margin-bottom:12px}
+    .btn{display:inline-block;padding:11px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041014;font-weight:600;border:none}
+    .hint{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+    .errors{background:rgba(255,20,60,0.06);color:#ff9aa6;padding:10px;border-radius:8px;margin-bottom:10px;font-size:13px;border:1px solid rgba(255,20,60,0.08)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">Создать аккаунт</div>
+    <div class="subtitle">Быстро и безопасно</div>
+
+    <form method="post" action="{% url 'account_signup' %}">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="field">
+        <label for="id_username">{% trans "Имя пользователя" %}</label>
+        {{ form.username|add_class:"" }}
+      </div>
+
+      <div class="field">
+        <label for="id_email">{% trans "Email" %}</label>
+        {{ form.email|add_class:"" }}
+      </div>
+
+      <div class="row">
+        <div style="flex:1" class="field">
+          <label for="id_password1">{% trans "Пароль" %}</label>
+          {{ form.password1|add_class:"" }}
+        </div>
+        <div style="flex:1" class="field">
+          <label for="id_password2">{% trans "Подтвердите пароль" %}</label>
+          {{ form.password2|add_class:"" }}
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <button type="submit" class="btn">{% trans "Зарегистрироваться" %}</button>
+      </div>
+    </form>
+
+    {% if socialaccount_providers %}
+      <div class="hint">Или зарегистрируйтесь через</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        {% for provider in socialaccount_providers %}
+          <a class="social-btn" style="flex:1;padding:10px;border-radius:9px;text-align:center;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);text-decoration:none" href="{% provider_login_url provider.id process='signup' %}">
+            {{ provider.name }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="hint">Уже есть аккаунт? <a style="color:var(--accent1);font-weight:600;text-decoration:none" href="{% url 'account_login' %}">Войти</a></div>
+  </div>
+</body>
+</html>

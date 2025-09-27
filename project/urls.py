@@ -18,12 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from . import settings
+import debug_toolbar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('moviesite.urls')),
     path('login/', include('login.urls')),
-    path('accounts/', include(('login.urls', 'login'), namespace='login'))
+    path('accounts/', include(('login.urls', 'login'), namespace='login')),
+    path('__debug__/', include(debug_toolbar.urls)),
+    path('auth/', include('allauth.urls'))
 ]
 
 if settings.DEBUG:
